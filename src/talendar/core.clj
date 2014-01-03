@@ -1,5 +1,6 @@
 (ns talendar.core
   (:use [quil.core]
+        [talendar.grid]
         [talendar.toda :as toda])
   (:import [javax.swing JFileChooser]
            [codeanticode.gsvideo GSMovie])
@@ -22,57 +23,39 @@
 
   )
 
-(def size-w 300)
-(def size-h 300)
+(def jan (first (toda/get-year-data 2014)))
+
 (defn draw []
   (frame-rate 20)
-
   (ellipse 100 100 30 30)
   (fill 0)
   (rect 0 0 300 300)
-
   (stroke 250)
-  (let [r-w (quot size-w 6)
-        r-h (quot size-h 6)
-        jan (first (toda/get-year-data 2014))]
-    (let [data  (for [x (range 6)
-                      y (range 6)]
-                  [x y]
-
-                  )]
-      (doall (map (fn [[x y]]
-              (let [xx (* x r-w)
-                    yy (* y r-h)
-                    w (+ xx r-w)
-                    h (+ yy r-h)
-                    cl @click
-                    ]
-                (fill 0)
-                (if (and (>= (cl 0) xx)
-                         (<= (cl 0) w)
-                         (>= (cl 1) yy)
-                         (<= (cl 1) h))
-                  (do
-                    (fill 255 255 0 40)
-                    (rect xx yy w h)
-                    (text-day (+ (* y 6) (inc x )) (+ xx (/ r-w 2)) (+  yy (/ r-h 2)))
-                    )
-                  (do
+  (doall (map (fn [[x y]]
+                (let [current-rect (coords x y)
+                      n-day (get-rect-number x y)
+                      click-day (dec (get-rect-number @click))
+                      cal-day (- n-day click-day)
+                      possible-day? (and (> cal-day 0) (<= cal-day (:days-on-month jan)))
+                      ]
+                  (if (> 36 (+ click-day (:days-on-month jan)))
+                    (if possible-day?
+                      (fill 155) ; selected!
+                      (fill 80))
                     (fill 0)
-                    (rect xx yy w h))
-                  )
-                )) data))
-      ))
+                      )
+                  (paint current-rect)
+                  (when possible-day?
+                    (text-day cal-day (+ (:xx current-rect) (/ r-w 2)) (+  (:yy current-rect) (/ r-h 2))))
+                  ) ) data-36-days))
+
   (comment
     (when-not (nil? @img)
                                         ;    (image @img 0 0)
       )
     (when (.available movie)
       (.read movie))
-    (image movie 100 100))
-
-
-  )
+    (image movie 100 100)))
 
 (defn text-day [n x y]
   (push-style)
@@ -86,8 +69,15 @@
   (.read movie)
   )
 
+(defn get-selected-rect [[x y]]
+  "returns a vector indexed in 0 [0 0] indicating col and row"
+  [ (dec (first (filter #(and (>= (* % r-w) x) (<=  (* (dec %) r-w) x)) (range 1 7))))
+    (dec (first  (filter #(and (>= (* % r-h) y) (<=  (* (dec %) r-h) y)) (range 1 7))))]
+  )
+
 (defn raton []
-  (reset! click [(mouse-x) (mouse-y)])
+  (reset! click (get-selected-rect [(mouse-x) (mouse-y)]))
+
   (comment (let [fc (JFileChooser.)
          rv (.showOpenDialog fc example) ]
      (when (zero? rv)
