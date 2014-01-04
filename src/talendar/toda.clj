@@ -1,6 +1,7 @@
 (ns talendar.toda
    (:refer-clojure :exclude [extend])
-  (:use [clj-time.core :exclude (second)])
+   (:use [clj-time.core :exclude (second)]
+         [clj-time.predicates :only (sunday?)])
     )
 
 (defn get-year-data [year] (let [ms (map #(local-date year % 1) (range 1 13))]
@@ -16,3 +17,6 @@
      )
 
    ))
+
+(defn is-sunday? [-day -month -year]
+  (sunday? (local-date -year -month -day)))

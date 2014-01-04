@@ -1,7 +1,7 @@
 (ns talendar.grid
   (:use [quil.core]))
-(def size-w 300)
-(def size-h 300)
+(def size-w 1600)
+(def size-h 1000)
 (def r-w (quot size-w 6))
 (def r-h (quot size-h 6))
 (def data-36-days   (for [x (range 6)

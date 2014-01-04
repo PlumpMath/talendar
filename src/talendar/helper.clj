@@ -9,5 +9,7 @@
   (.loadPixels im)
   (let [myimage (create-image (. im width) (. im height) 1)]
     (set! (. myimage pixels) (. im pixels))
+    (.updatePixels myimage)
     myimage
+
     ))
