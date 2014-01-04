@@ -24,7 +24,7 @@
         (reset! img (load-image "/Users/juan_mini/load.png"))
         )))
 
-  (def vl-1 (vl/set-up example "./data/bubble.mov"   (:days-on-month jan)))
+  (def vl-1 (vl/set-up example "./data/palmera.mov"   (:days-on-month jan)))
   (println (:number vl-1))
 
   )
@@ -40,7 +40,7 @@
 
 (defn draw []
 
-  (frame-rate 5)
+  (frame-rate 1)
   (ellipse 100 100 30 30)
   (fill 0)
   (rect 0 0 300 300)
@@ -59,7 +59,7 @@
                            cal-day (- rect-number rect-number-clicked)
                            possible-day? (and (> cal-day 0) (<= cal-day limit-grid))
                            ]
-                       (println cal-day)
+
                        (if (>= 36 (+ rect-number-clicked limit-grid))
                          (if possible-day?
                            (do               ;selected
@@ -70,7 +70,7 @@
                                (tint 255)
                                )
 
-                             ( image (@(:frames vl-1)  (dec cal-day)) (current-rect :xx) (current-rect :yy) r-w r-h)
+                             (image (get @(:frames vl-1)  (int (random 10 25))) (current-rect :xx) (current-rect :yy) r-w r-h)
 
                              )
                            (do
@@ -112,6 +112,11 @@
   (println @click)
 
   )
+(defn key-press []
+  (println (str "Key pressed: " (raw-key)))
+  (save "jolin3.jpg")
+)
+
 
 (defsketch example
   :title "j"
@@ -119,5 +124,5 @@
   :draw draw
   :size [size-w size-h]
   :mouse-pressed raton
-
+  :key-typed key-press
   )

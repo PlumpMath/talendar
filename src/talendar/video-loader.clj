@@ -1,12 +1,12 @@
 (ns talendar.video-loader
-  (:use [quil.core :only (map-range)]
+  (:use [quil.core :only (map-range image)]
         [talendar.helper])
   (:import [codeanticode.gsvideo GSMovie]))
 
 
 (defn set-up [sketch url  limit]
   (let [ movie (GSMovie. sketch url)
-         frames (atom [])]
+        frames (atom [])]
     (.play movie)
     (.goToBeginning movie)
     (.pause movie)
@@ -19,7 +19,7 @@
                                       ))]
 
       (.play movie)
-      (.jump movie  (first map-frames-number))
+      (.jump movie  (int (first map-frames-number)))
       (.pause movie)
 
       {:movie movie :number map-frames-number :frames frames})
@@ -34,25 +34,35 @@
     (if (and (.available movie) (.ready movie))
       (do
         (.read movie)
-        (println (. movie frame) )
-        (swap! frames conj (clone-image movie))
+        ;(println "reading frame:::" (. movie frame) )
+        (let [r (clone-image movie)]
+          (swap! frames conj r)
+          (when (< 1 (count @frames))
+              (image (last (butlast @frames)) 300 0 300 300 ))
+          (image (last @frames) 300 300 300 300 )
+          (println (count @frames))
+          )
+
         (if (< (count @frames) (count numbers))
           (do
             (.play movie)
             (let [to-frame (numbers (count @frames))]
               (if (< (.length movie) to-frame)
                 (.goToEnd movie)
-                (.jump movie  to-frame))
+                (.jump movie  (int to-frame)))
               )
             true
             )
-          false
+          true
           )
         true
-      )
-      true
-      )
-    )
-  false
 
-)
+        (do
+          (println "unavalibale" (.available movie) (.ready movie))
+
+          true))
+      )
+    false
+    )
+
+  )
