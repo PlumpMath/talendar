@@ -2,18 +2,19 @@
   (:use [quil.core]
         [talendar.grid]
         [talendar.toda :as toda])
+  (:require         [talendar.video-loader :as vl])
   (:import [javax.swing JFileChooser]
            [codeanticode.gsvideo GSMovie])
-  (:require [clojure.core.async :as async :refer [<! >! <!! timeout chan alt! go]])
+;  (:require [clojure.core.async :as async :refer [<! >! <!! timeout chan alt! go]])
   )
 
 
-(declare example movie)
+(declare example vl-1)
 (def  img (atom nil))
 (def click (atom [-1 -1]))
-(def frames (atom []))
-(declare available-frames)
+
 (def jan (first (toda/get-year-data 2014)))
+
 (defn setup []
     (text-size 10)
   (let [fc (JFileChooser.)
@@ -22,35 +23,9 @@
       (let [file (.getSelectedFile fc)]
         (reset! img (load-image "/Users/juan_mini/load.png"))
         )))
-  (def movie (GSMovie. example "./data/station.mov"))
-  (.play movie)
-  (.goToBeginning movie)
-    (.pause movie)
-  (def available-frames (.length movie ))
-;; play mov
 
-  (println available-frames)
-
-  (comment let [data (map #(int (map-range % 0 (:days-on-month jan) 0 available-frames ))
-                  (range 1 (inc (:days-on-month jan)))
-                  )]
-    (doall (map
-            (fn [frame]
-              (.play movie)
-              (.jump movie frame)
-              (.pause movie)
-              (while (.isSeeking movie)
-                (println "seeking")
-                )
-              (.read movie)
-              (swap! frames conj movie)
-
-            ) data))
-    )
-
+  (def vl-1 (vl/set-up example "./data/station.mov"   (:days-on-month jan)))
   )
-
-
 
 (defn text-day [n x y]
   (push-style)
@@ -62,65 +37,53 @@
 
 (defn draw []
 
-
   (frame-rate 20)
   (ellipse 100 100 30 30)
   (fill 0)
   (rect 0 0 300 300)
   (stroke 250)
-  (doall (map (fn [[x y]]
-                (let [current-rect (coords x y)
-                      n-day (get-rect-number x y)
-                      click-day (dec (get-rect-number @click))
-                      cal-day (- n-day click-day)
-                      available-frame (when (> cal-day (count @frames) )
-                                        (.play movie)
-                                        (.jump movie (int (map-range cal-day 0 (:days-on-month jan) 0 available-frames )))
-                                        (.pause movie)
-                                        (while (complement (.available movie))
-
-                                          (println "readed" )
-                                          )
-                                        (.read movie)
-                                          (swap! frames conj movie)
+(if (vl/is-loading-movie? (:movie vl-1) (:frames vl-1) (:number vl-1))
+     (do
+       (fill 255)
+       (text (str (frame-count)) 50 50 20))
 
 
-                                          )
+     (let [limit-grid (:days-on-month jan)]
+       (doall
+        (->> data-36-days
+             (map (fn [[x y]]
+                    (let [current-rect (coords x y)
+                          rect-number (get-rect-number x y)
+                          rect-number-clicked  (dec (get-rect-number @click))
+                          cal-day (- rect-number rect-number-clicked)
+                          possible-day? (and (> cal-day 0) (<= cal-day limit-grid))
+                          ]
+                      (println cal-day)
+                      (if (>= 36 (+ rect-number-clicked limit-grid))
+                        (if possible-day?
+                          (do               ;selected
+                            (fill 155)
+                            (paint current-rect)
+                            ( image (@(:frames vl-1)  (dec cal-day)) (current-rect :xx) (current-rect :yy) r-w r-h)
 
-                      possible-day? (and (> cal-day 0) (<= cal-day (:days-on-month jan)))
-                      ]
-                                        (println cal-day)
-                  (if (> 36 (+ click-day (:days-on-month jan)))
-                    (if possible-day?
-                       ;                 (fill 155) ; selected!
-                      (do (fill 155)
-                          ;(image (@frames (int (random 5))) 0 0)
-;                          (image (@frames 0 ) (:xx current-rect) (:yy current-rect) r-w r-h)
-                          )
-                      (fill 80))
-                    (fill 0)
-                      )
-                  (paint current-rect)
-                  (when possible-day?
-                    (text-day cal-day (+ (:xx current-rect) (/ r-w 2)) (+  (:yy current-rect) (/ r-h 2))))
-                  (text-day
-                   (int (map-range cal-day 0 (:days-on-month jan) 0 available-frames ))
-                   (+ 10 (:xx current-rect) (/ r-w 2)) (+  10 (:yy current-rect) (/ r-h 2)))
-                  ) ) data-36-days))
+                            )
+                          (do
+                            (fill 80)
+                            (paint current-rect)
+                            ))
+                        (do
+                          (fill 0)
+                          (paint current-rect))
+                        )
 
-  (comment
-    (when-not (nil? @img)
-                                        ;    (image @img 0 0)
-      )
+                      (when possible-day?
+                        (text-day cal-day (+ (:xx current-rect) (/ r-w 2)) (+  (:yy current-rect) (/ r-h 2))))
+
+                      ) ) )))))
+
+)
 
 
-    ))
-
-
-(defn movieEvent [e]
-  (println "aaaa")
-  (.read movie)
-  )
 
 (defn get-selected-rect [[x y]]
   "returns a vector indexed in 0 [0 0] indicating col and row"
@@ -147,5 +110,5 @@
   :draw draw
   :size [size-w size-h]
   :mouse-pressed raton
-  :movieEvent movieEvent
+
   )

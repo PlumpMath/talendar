@@ -30,6 +30,7 @@
   )
 
 (defn get-rect-number
+  "1 indexed "
   ([x y]
      (+ (* y 6) (inc x )))
   ([[x y]] (get-rect-number x y))
