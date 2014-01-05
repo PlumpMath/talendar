@@ -5,14 +5,14 @@
 
   )
 
-(defn clone-image [im]
+(defn clone-image [im nframe]
   (.loadPixels im)
 
   (let [myimage (create-image (. im width) (. im height) 1)]
     (set!   (. myimage pixels) (. im pixels))
     (.updatePixels myimage)
     (image myimage 0 0 300 300)
-    myimage
+    {:nframe nframe :img myimage}
     )
 
 

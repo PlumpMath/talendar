@@ -1,4 +1,4 @@
-(ns talendar.video-loader
+(ns talendar.videoloader
   (:use [quil.core :only (map-range image)]
         [talendar.helper])
   (:import [codeanticode.gsvideo GSMovie]))
@@ -35,12 +35,14 @@
       (do
         (.read movie)
         ;(println "reading frame:::" (. movie frame) )
-        (let [r (clone-image movie)]
-          (swap! frames conj r)
-          (when (< 1 (count @frames))
-              (image (last (butlast @frames)) 300 0 300 300 ))
-          (image (last @frames) 300 300 300 300 )
-          (println (count @frames))
+        (let [r (clone-image movie (. movie frame))]
+          (if-not (zero? (count @frames))
+            (when (not= (. movie frame) (:nframe (last @frames)))
+              (swap! frames conj r))
+            (swap! frames conj r)
+            )
+
+
           )
 
         (if (< (count @frames) (count numbers))
@@ -51,6 +53,7 @@
                 (.goToEnd movie)
                 (.jump movie  (int to-frame)))
               )
+
             true
             )
           true

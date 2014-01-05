@@ -1,12 +1,12 @@
 (ns talendar.grid
   (:use [quil.core]))
-(def size-w 1600)
-(def size-h 1000)
+(def size-w 1200)
+(def size-h 700)
 (def r-w (quot size-w 6))
 (def r-h (quot size-h 6))
-(def data-36-days   (for [x (range 6)
-                          y (range 6)]
-                      [x y]))
+(def data-36-days   (vec (for [x (range 6)
+                           y (range 6)]
+                       [x y])))
 
 (defn coords [x y]
   (let [ xx (* x r-w)
