@@ -8,7 +8,7 @@
                  [clj-time "0.5.0"]
                 ; [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
                  ]
-  :jvm-opts ["-Xmx3g" "-sberver"]
+  :jvm-opts ["-Xmx3g" "-server"]
 
-  :resource-paths ["lib/gstreamer-java.jar" "lib/GSVideo.jar" "lib/jna.jar" "lib/gstreamer/macosx64"]
+  :resource-paths ["lib/gstreamer-java.jar" "lib/GSVideo.jar" "lib/jna.jar" "lib/gstreamer/macosx32"]
  )
