@@ -10,5 +10,5 @@
                  ]
   :jvm-opts ["-Xmx3g" "-server"]
 
-  :resource-paths ["lib/gstreamer-java.jar" "lib/GSVideo.jar" "lib/jna.jar" "lib/gstreamer/macosx32"]
+  :resource-paths ["lib/gstreamer-java.jar" "lib/GSVideo.jar" "lib/jna.jar" "lib/gstreamer/macosx64"]
  )

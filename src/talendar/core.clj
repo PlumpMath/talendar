@@ -25,19 +25,80 @@
 (def  img (atom nil))
 (def click (atom [-1 -1]))
 
-
 (defn cdata []
   (comment
     {:peli "/Users/juanantonioruz/Desktop/hoy/misPelis/giro en bici.MOV"
      :month 1
      :soft [15 150 250 200]
      :intensive [ 255 255 0]
-     :text-month [15 150 250 200]})
-  {:peli "/Users/juanantonioruz/Desktop/hoy/misPelis/canoa.MOV"
-   :month 2
-   :soft [15 150 250 100]
-   :intensive [255 50 0]
-   :text-month [255 50 0]})
+     :text-month [15 150 250 200]}
+    {:peli "/Users/juanantonioruz/Desktop/hoy/misPelis/canoa.MOV"
+     :month 2
+     :soft [15 150 250 100]
+     :intensive [255 50 0]
+     :text-month [255 50 0]}
+    {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/P1040687.MOV"
+     :month 3
+     :soft [255 150 80 100]
+     :intensive [75 ]
+     :text-month [255 150 0]}
+    {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/giro 360 de palmera.MOV"
+     :month 4
+     :soft [255 50 130 170]
+     :intensive [255 ]
+     :text-month [255 50 130]}
+    {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/P1040689.MOV"
+     :month 5
+     :soft [255  170]
+     :intensive [255 ]
+     :text-month [100]}
+    {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/P1040733.MOV"
+     :month 6
+     :soft [0 100 255  70]
+     :intensive [255 255 0 180]
+     :text-month [100]}
+      {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/P1040668.MOV"
+     :month 7
+     :soft [50 200 250  170]
+     :intensive [50  100]
+       :text-month [100 200 0]}
+      {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/P1040734.MOV"
+     :month 8
+     :soft [50 200 250  170]
+     :intensive [50  100]
+       :text-month [100 200 0]}
+      {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/P1030637.MOV"
+     :month 9
+     :soft [50 200 250  170]
+     :intensive [250 100]
+       :text-month [50 200 250]}
+      {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/patada a naranja.MOV"
+     :month 10
+     :soft [255 1 200  90]
+     :intensive [255]
+       :text-month [150]}
+      {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/lapiz.MOV"
+     :month 11
+     :soft [55 155 200  200]
+     :intensive [255]
+     :text-month [150]}
+      {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/P1040663.MOV"
+     :month 12
+     :soft [100 100 255  70]
+     :intensive [0 255 255 180]
+     :text-month [100]}
+    {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/eric cuenta como una vieja.MOV"
+     :month 12
+     :soft [200 100 55  170]
+     :intensive [0]
+     :text-month [100 100]}
+    )
+      {:peli "/Users/juan_mini/Desktop/discoLacie_copia_unica/JUANITU/misPelis/marco arena 1.MOV"
+     :month 2
+     :soft [55 155 200  100]
+     :intensive [255]
+     :text-month [150]}
+  )
 
 (defn gcolor
   ([]
@@ -75,7 +136,7 @@
   )
 
 (defn gtitle []
-  [((cdata) :month) (- size-w 80) (- size-h 50) (gcolor :text-month)])
+  [((cdata) :month) (- size-w 80) (- size-h 50)  ((cdata) :text-month)])
 
 (defn draw []
 
@@ -100,7 +161,7 @@
                   (if (>= 36 (+ rect-number-clicked limit-grid))
                     (if possible-day?
                       (do               ;selected
-                        (if (is-sunday? cal-day 1 2014)
+                        (if (is-sunday? cal-day (:month (cdata)) 2014)
                           (fill 255)
                           (fill 255)
                           )
@@ -118,7 +179,7 @@
 
 
                     (image (:img ((vec (sort-by :nframe @(:frames vl-1))) (dec cal-day))) (current-rect :xx) (current-rect :yy) r-w r-h)
-                    (when (is-sunday? cal-day 1 2014)
+                    (when (is-sunday? cal-day (:month (cdata)) 2014)
                       (apply fill (gcolor :soft))
                       (paint current-rect)
                       )
