@@ -1,4 +1,4 @@
-(ns talendar.core
+(ns talendar.test
   (:use quil.core)
   (:import [javax.swing JFileChooser]
            [codeanticode.gsvideo GSMovie]
@@ -10,8 +10,9 @@
 
 
   (def movie (GSMovie. example "./data/station.mov"))
-  (.loop movie )
-
+  (.play movie )
+  (.goToBeginning movie)
+  (.pause movie)
   )
 
 (defn draw []
@@ -19,23 +20,41 @@
 
   (comment
     "this way works but i'll prefer to work with event handler"
-    (when (.available movie)
-     (.read movie)))
+    )
+  (comment when (.available movie)
+     (.read movie))
   (image movie 100 100)
   )
 
-(defn movieEvent [e]
+(defn mmmovieEvent [e]
   (println "listen movie event!")
   (.read movie)
   )
+(def new-frame (atom 0))
 
+(defn keyed []
+  (when-not (.isSeeking movie)
+      (condp = (raw-key)
+        \q  (when (> @new-frame 0)
+              (swap! new-frame dec))
 
+        \w (when (< @new-frame  (.length movie))
+             (swap! new-frame inc))
+        "nothing")
+      (.play movie)
+      (.jump movie @new-frame)
+      (.pause movie)w
+      )
+
+  )
 
 (defsketch example
   :title "j"
   :setup setup
   :draw draw
   :size [300 300]
-  :mouse-pressed raton
-  :movie-event movieEvent
+  :target :perm-frame
+  :key-pressed keyed
+;  :mouse-pressed raton
+;  :movie-event movieEvent
   )
