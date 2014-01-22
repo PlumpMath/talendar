@@ -1,5 +1,7 @@
 # talendar
 
+unzip this on lib folder: https://dl.dropboxusercontent.com/u/8688858/talendar.zip
+
 A Clojure prototype to play with representing time calendar.
 Using quil/quil
 

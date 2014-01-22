@@ -2,14 +2,17 @@
   (:use quil.core)
   (:import [javax.swing JFileChooser]
            [codeanticode.gsvideo GSMovie]
+
            )
   )
 (declare example movie)
 
+
+
 (defn setup []
 
 
-  (def movie (GSMovie. example "./data/station.mov"))
+  (def movie (GSMovie. example "./data/palmera.mov"))
   (.play movie )
   (.goToBeginning movie)
   (.pause movie)
@@ -18,18 +21,17 @@
 (defn draw []
 
 
-  (comment
-    "this way works but i'll prefer to work with event handler"
-    )
-  (comment when (.available movie)
-     (.read movie))
+
+
   (image movie 100 100)
   )
 
-(defn mmmovieEvent [e]
-  (println "listen movie event!")
+; this method is hard coded on quil/applet.clj
+(defn movieEvent [movie]
+  (println "listen movie event!" movie)
   (.read movie)
   )
+
 (def new-frame (atom 0))
 
 (defn keyed []
@@ -37,13 +39,18 @@
       (condp = (raw-key)
         \q  (when (> @new-frame 0)
               (swap! new-frame dec))
-
         \w (when (< @new-frame  (.length movie))
              (swap! new-frame inc))
+        \x (do (println "pdfing") (let [pdf (create-graphics 300 300 :pdf  "./hola.pdf")
+                                        ]
+                                    (begin-record :pdf "hola.pdf")
+                                    ))
+        \z (end-record)
+
         "nothing")
       (.play movie)
       (.jump movie @new-frame)
-      (.pause movie)w
+      (.pause movie)
       )
 
   )
@@ -56,5 +63,5 @@
   :target :perm-frame
   :key-pressed keyed
 ;  :mouse-pressed raton
-;  :movie-event movieEvent
+  :movie-event movieEvent
   )
