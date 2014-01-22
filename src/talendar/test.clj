@@ -5,52 +5,59 @@
 
            )
   )
-(declare example movie)
+(declare example )
 
+(def movie (atom nil))
 
+(defn get-movie []
+  @movie
+  )
 
 (defn setup []
 
+  (reset! movie (GSMovie. example "./data/palmera.mov"))
 
-  (def movie (GSMovie. example "./data/palmera.mov"))
-  (.play movie )
-  (.goToBeginning movie)
-  (.pause movie)
+
+
   )
 
 (defn draw []
 
 
 
-
-  (image movie 100 100)
+  (when-not (nil? @movie)
+    (image (get-movie) 100 100))
   )
 
 ; this method is hard coded on quil/applet.clj
 (defn movieEvent [movie]
-  (println "listen movie event!" movie)
+  (println "listen (movie) event!" movie)
   (.read movie)
   )
 
 (def new-frame (atom 0))
 
 (defn keyed []
-  (when-not (.isSeeking movie)
+  (when-not (.isSeeking (get-movie))
       (condp = (raw-key)
         \q  (when (> @new-frame 0)
               (swap! new-frame dec))
-        \w (when (< @new-frame  (.length movie))
+        \w (when (< @new-frame  (.length (get-movie)))
              (swap! new-frame inc))
         \x (do (println "pdfing") (let [pdf (create-graphics 300 300 :pdf  "./hola.pdf")
                                         ]
                                     (begin-record :pdf "hola.pdf")
                                     ))
+        \o (do
+               (.play (get-movie) )
+               (.goToBeginning (get-movie))
+               (.pause (get-movie)))
         \z (end-record)
 
         "nothing")
-      (.play movie)
-      (.jump movie @new-frame)
-      (.pause movie)
+      (.play (get-movie))
+      (.jump (get-movie) 1)
+      (.pause (get-movie))
       )
 
   )

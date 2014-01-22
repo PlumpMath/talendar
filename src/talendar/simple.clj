@@ -24,7 +24,7 @@
 
 
 (defsketch example
-  :title "j"
+  :title "jii"
   :setup setup
   :draw draw
   :size [300 300]
