@@ -15,7 +15,7 @@
 
 (defn setup []
 
-  (reset! movie (GSMovie. example "./data/palmera.mov"))
+  (reset! movie (GSMovie. example "./data/station.mov"))
 
 
 
@@ -37,13 +37,21 @@
 
 (def new-frame (atom 0))
 
+(defn continue-new-frame []
+        (.play (get-movie))
+      (.jump (get-movie) @new-frame)
+      (.pause (get-movie))
+)
+
 (defn keyed []
   (when-not (.isSeeking (get-movie))
       (condp = (raw-key)
         \q  (when (> @new-frame 0)
-              (swap! new-frame dec))
+              (swap! new-frame dec)
+              (continue-new-frame))
         \w (when (< @new-frame  (.length (get-movie)))
-             (swap! new-frame inc))
+             (swap! new-frame inc)
+             (continue-new-frame))
         \x (do (println "pdfing") (let [pdf (create-graphics 300 300 :pdf  "./hola.pdf")
                                         ]
                                     (begin-record :pdf "hola.pdf")
@@ -55,9 +63,6 @@
         \z (end-record)
 
         "nothing")
-      (.play (get-movie))
-      (.jump (get-movie) 1)
-      (.pause (get-movie))
       )
 
   )
