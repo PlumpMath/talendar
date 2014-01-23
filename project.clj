@@ -7,7 +7,7 @@
                  [quil "1.6.0"]
                  [clj-time "0.5.0"]
 
-                                        ; [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
+                 [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
                  ]
   :jvm-opts ["-Xmx3g" "-server"]
 
